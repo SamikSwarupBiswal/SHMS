@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:5.14-community
+    container_name: shms-neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474" # Neo4j Browser UI
+      - "7687:7687" # Bolt protocol
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+
+  cassandra:
+    image: cassandra:4.1
+    container_name: shms-cassandra
+    restart: unless-stopped
+    ports:
+      - "9042:9042" # CQL native protocol
+    environment:
+      - CASSANDRA_CLUSTER_NAME=SHMSCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  cassandra_data:
